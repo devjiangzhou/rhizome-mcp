@@ -21,6 +21,12 @@ pre { background: #0f172a; color: #e2e8f0; padding: 1rem; border-radius: 8px; ov
 details summary { cursor: pointer; color: #2563eb; margin-top: 0.5rem; }
 footer { color: #94a3b8; font-size: 0.8rem; margin-top: 3rem; }
 
+.task-entry {
+  display: inline-block; padding: .5rem .85rem; border-radius: .5rem;
+  color: #fff; background: #214eaa; font-weight: 600; text-decoration: none;
+}
+.task-entry:hover { background: #173d8d; }
+
 @media (prefers-color-scheme: dark) {
   body { background: #0b1220; color: #e2e8f0; }
   h2 { border-bottom-color: #1e293b; }

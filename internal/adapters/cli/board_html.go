@@ -38,8 +38,13 @@ type servedBoardSearchState struct {
 	Error         bool
 }
 
-func renderIssueDetailHTML(detail domain.IssueDetail) (string, error) {
+func renderIssueDetailHTML(detail domain.IssueDetail, taskQuery string) (string, error) {
 	vm := newIssueDetailPageViewModel(detail)
+	if taskQuery != "" {
+		vm.ReturnHref = "/tasks?" + taskQuery
+		vm.ReturnLabel = "Return to tasks"
+		vm.BoardRoute += "?" + taskQuery
+	}
 	return renderBoardTemplate("boardIssueDetailPage", vm)
 }
 

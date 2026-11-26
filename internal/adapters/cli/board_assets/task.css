@@ -1,0 +1,93 @@
+.task-page {
+  --task-panel: #fff;
+  --task-surface: #f3f5f8;
+  --task-border: #d7dee7;
+  --task-muted: #485569;
+  --task-accent: #1746a2;
+  --task-selected: #dfeaff;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 3rem);
+  background: #f8fafc;
+}
+.task-page a { color: var(--task-accent); }
+.task-home { font-size: .875rem; }
+.task-header, .task-summary { display: flex; align-items: center; gap: 1rem; }
+.task-header { margin: 1rem 0; }
+.task-header h1 { margin: 0; font-size: 2rem; }
+.task-modes, .task-filters, .task-pagination { display: flex; gap: .4rem; }
+.task-modes {
+  padding: .25rem; border: 1px solid var(--task-border);
+  border-radius: .65rem; background: var(--task-panel);
+}
+.task-filters { flex-wrap: wrap; }
+.task-modes a, .task-filters a {
+  padding: .35rem .7rem; border-radius: .4rem; font-size: .875rem;
+  color: inherit; font-weight: 600; text-decoration: none;
+}
+.task-modes a:hover, .task-filters a:hover { background: var(--task-surface); }
+.task-modes a[aria-current], .task-filters a[aria-current] {
+  background: var(--task-selected); color: var(--task-accent);
+}
+.task-summary {
+  margin: 1rem 0 .5rem; font-size: .875rem; color: var(--task-muted);
+}
+.task-table {
+  border: 1px solid var(--task-border); border-radius: .7rem;
+  background: var(--task-panel);
+}
+.task-table table { margin: 0; }
+.task-table th, .task-table td { padding: .75rem 1rem; border-color: var(--task-border); }
+.task-table th { color: var(--task-muted); background: var(--task-surface); }
+.task-table td:first-child { width: 60%; min-width: 13rem; }
+.task-table td a { font-weight: 600; overflow-wrap: anywhere; }
+.task-table tr:last-child td { border-bottom: 0; }
+.task-id { display: inline-block; margin-right: .3rem; color: var(--task-muted); font-size: .8rem; }
+.task-status { display: inline-flex; align-items: center; gap: .4rem; white-space: nowrap; }
+.task-dot { display: inline-block; width: .55rem; height: .55rem; flex: none; border-radius: 50%; background: #64748b; }
+.task-dot[data-status="ready"] { background: #0e7490; }
+.task-dot[data-status="in_progress"] { background: #3b82f6; }
+.task-dot[data-status="blocked"] { background: #e45555; }
+.task-dot[data-status="review"] { background: #9464e7; }
+.task-dot[data-status="done"] { background: #27966e; }
+.task-board {
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(13.5rem, 1fr);
+  gap: .75rem; overflow-x: auto; padding-bottom: .75rem;
+}
+.task-board > :only-child { max-width: 25rem; }
+.task-column {
+  min-height: 16rem; padding: .7rem;
+  border: 1px solid var(--task-border); border-radius: .7rem; background: var(--task-surface);
+}
+.task-column h2 {
+  display: flex; align-items: center; gap: .45rem;
+  margin: 0 0 .75rem; padding: 0; border: 0; font-size: .9rem;
+}
+.task-count { margin-left: auto; color: var(--task-muted); font-size: .8rem; font-variant-numeric: tabular-nums; }
+.task-column ul { display: grid; gap: .5rem; margin: 0; padding: 0; list-style: none; }
+a.task-card {
+  display: grid; gap: .35rem; padding: .7rem;
+  border: 1px solid var(--task-border); border-radius: .5rem; background: var(--task-panel);
+  color: inherit; text-decoration: none; font-size: .875rem; overflow-wrap: anywhere;
+}
+.task-card:hover { border-color: var(--task-accent); }
+.task-card:hover strong { color: var(--task-accent); text-decoration: underline; }
+.task-card-meta, .task-empty { color: var(--task-muted); font-size: .8rem; }
+.task-labels { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .25rem; }
+.task-labels span {
+  padding: .04rem .35rem; border: 1px solid var(--task-border);
+  border-radius: .35rem; color: var(--task-muted); font-size: .75rem; overflow-wrap: anywhere;
+}
+.task-pagination { gap: 1rem; margin-top: 1rem; font-size: .875rem; }
+
+@media (prefers-color-scheme: dark) {
+  .task-page {
+    --task-panel: #121d2d;
+    --task-surface: #192638;
+    --task-border: #334359;
+    --task-muted: #adbacd;
+    --task-accent: #9abfff;
+    --task-selected: #253d62;
+    background: #0b1220;
+  }
+}

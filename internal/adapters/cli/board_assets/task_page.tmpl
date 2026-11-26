@@ -1,0 +1,71 @@
+{{define "taskPage"}}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tasks · Rhizome</title>
+<style>{{.Style}}</style>
+</head>
+<body class="task-page">
+<main>
+<a class="task-home" href="/">← Project overview</a>
+<header class="task-header">
+<h1>Tasks</h1>
+<nav class="task-modes" aria-label="Task view">
+{{range .Modes}}<a href="{{.Href}}"{{if .Current}} aria-current="page"{{end}}>{{.Label}}</a>{{end}}
+</nav>
+</header>
+<nav class="task-filters" aria-label="Filter by status">
+{{range .Filters}}<a href="{{.Href}}"{{if .Current}} aria-current="page"{{end}}>{{.Label}}</a>{{end}}
+</nav>
+<div class="task-summary">
+<span>{{len .Rows}} task{{if ne (len .Rows) 1}}s{{end}}{{if or .FirstHref .NextHref}} on this page{{end}}</span>
+<a href="{{.RefreshHref}}">Refresh</a>
+</div>
+{{if .IsBoard}}
+<div class="task-board" role="region" aria-label="Tasks by status" tabindex="0">
+{{range .Columns}}
+<section class="task-column" aria-labelledby="status-{{.Status}}">
+<h2 id="status-{{.Status}}"><span class="task-dot" data-status="{{.Status}}"></span>{{.Label}} <span class="task-count">{{len .Rows}}</span></h2>
+{{if .Rows}}<ul>
+{{range .Rows}}
+<li><a class="task-card" href="{{.Href}}">
+<span class="task-card-meta">{{.ID}} · {{.Type}}</span>
+<strong>{{.Title}}</strong>
+<span class="task-card-meta">Priority {{.Priority}}</span>
+{{if .Labels}}<span class="task-labels">{{range .Labels}}<span>{{.}}</span>{{end}}</span>{{end}}
+</a></li>
+{{end}}
+</ul>{{else}}<p class="task-empty">No tasks</p>{{end}}
+</section>
+{{end}}
+</div>
+{{else if .Rows}}
+<div class="task-table table-scroll">
+<table aria-label="Task list">
+<thead><tr><th scope="col">Task</th><th scope="col">Status</th><th scope="col">Priority</th><th scope="col">Type</th></tr></thead>
+<tbody>
+{{range .Rows}}
+<tr>
+<td><a href="{{.Href}}"><span class="task-id">{{.ID}}</span> {{.Title}}</a>
+{{if .Labels}}<div class="task-labels">{{range .Labels}}<span>{{.}}</span>{{end}}</div>{{end}}</td>
+<td><span class="task-status"><span class="task-dot" data-status="{{.Status}}"></span>{{.StatusLabel}}</span></td>
+<td>{{.Priority}}</td><td>{{.Type}}</td>
+</tr>
+{{end}}
+</tbody>
+</table>
+</div>
+{{else}}
+<p class="task-empty">No tasks match this view.</p>
+{{end}}
+{{if or .FirstHref .NextHref}}
+<nav class="task-pagination" aria-label="Task pages">
+{{if .FirstHref}}<a href="{{.FirstHref}}">First page</a>{{end}}
+{{if .NextHref}}<a href="{{.NextHref}}">Next page →</a>{{end}}
+</nav>
+{{end}}
+</main>
+</body>
+</html>
+{{end}}

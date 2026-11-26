@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"html"
 	"io"
 	"net/http"
 	"net/url"
@@ -468,6 +469,81 @@ func TestIntegrationBoardServe(t *testing.T) {
 	stopIntegrationBoardServer(t, server)
 	if err := server.waitForExit(t); err != nil {
 		t.Fatalf("wait for board server exit: %v", err)
+	}
+}
+
+func TestIntegrationBoardTaskViews(t *testing.T) {
+	t.Parallel()
+	env := newIntegrationEnvironment(t)
+	session := env.connect(t)
+	leased := mustCreateBoardIssue(t, session, map[string]any{
+		"type": "task", "title": "Lease <active>", "status": "ready", "priority": "critical",
+	})
+	claim := callIntegrationTool(t, session, "claim_issue", map[string]any{
+		"issue_id": leased.DisplayID, "lease_seconds": 600,
+	})
+	if claim.IsError {
+		t.Fatalf("claim issue: %#v", claim)
+	}
+	for index := range 100 {
+		mustCreateBoardIssue(t, session, map[string]any{
+			"type": "task", "title": fmt.Sprintf("Backlog %d", index), "status": "open",
+		})
+	}
+
+	server := launchIntegrationBoardServer(t, env, "127.0.0.1:0")
+	t.Cleanup(func() { stopIntegrationBoardServer(t, server) })
+	endpoint := strings.TrimSuffix(server.waitForEndpoint(t), "/")
+	client := &http.Client{Timeout: integrationTimeout}
+	get := func(path string) string {
+		t.Helper()
+		response, err := client.Get(endpoint + path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer response.Body.Close()
+		body, err := io.ReadAll(response.Body)
+		if err != nil || response.StatusCode != http.StatusOK {
+			t.Fatalf("GET %s: %d, %v", path, response.StatusCode, err)
+		}
+		return string(body)
+	}
+	taskLinks := regexp.MustCompile(`href="(/issues/ISSUE-[0-9]+)\?`)
+	list := get("/tasks")
+	board := get("/tasks?view=board")
+	listIDs := make(map[string]bool)
+	for _, match := range taskLinks.FindAllStringSubmatch(list, -1) {
+		listIDs[match[1]] = true
+	}
+	if len(listIDs) != 100 {
+		t.Fatalf("list page has %d distinct issues, want 100", len(listIDs))
+	}
+	boardLinks := taskLinks.FindAllStringSubmatch(board, -1)
+	if len(boardLinks) != len(listIDs) {
+		t.Fatalf("board page has %d issues, want %d", len(boardLinks), len(listIDs))
+	}
+	for _, match := range boardLinks {
+		if !listIDs[match[1]] {
+			t.Fatalf("board issue %q missing from list", match[1])
+		}
+	}
+	filtered := get("/tasks?view=board&status=in_progress")
+	if !strings.Contains(filtered, "<strong>Lease &lt;active&gt;</strong>") ||
+		strings.Count(filtered, `class="task-column"`) != 1 ||
+		len(taskLinks.FindAllStringSubmatch(filtered, -1)) != 1 {
+		t.Fatal("in-progress filter did not isolate and render the leased issue")
+	}
+	detail := get("/issues/" + leased.DisplayID + "?status=in_progress&view=board")
+	if !strings.Contains(detail, `href="/tasks?status=in_progress&amp;view=board">Return to tasks</a>`) {
+		t.Fatal("detail page lost the task view and filter")
+	}
+	next := regexp.MustCompile(`href="([^"]+)">Next page`).FindStringSubmatch(board)
+	if next == nil {
+		t.Fatal("board did not offer a next page")
+	}
+	last := taskLinks.FindAllStringSubmatch(get(html.UnescapeString(next[1])), -1)
+	if len(last) != 1 || listIDs[last[0][1]] {
+		t.Fatalf("next page should contain the one remaining issue, got %v", last)
 	}
 }
 

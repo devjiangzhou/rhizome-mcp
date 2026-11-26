@@ -80,6 +80,8 @@ func newBoardHTTPHandlerWithOptions(boardService BoardHTTPService, opts boardHTT
 		switch {
 		case path == "/":
 			serveBoardPage(w, request.Method, boardService, request.Context())
+		case path == "/tasks":
+			serveTaskPage(w, request, boardService)
 		case path == "/api/board":
 			serveBoardAPI(w, request.Method, boardService, request.Context(), request.Header.Get("If-None-Match"))
 		case path == "/api/events":
@@ -89,7 +91,7 @@ func newBoardHTTPHandlerWithOptions(boardService BoardHTTPService, opts boardHTT
 		case path == "/search":
 			serveSearchPage(w, request.Method, boardService, request.Context(), request.URL)
 		case strings.HasPrefix(path, "/issues/"):
-			serveIssueDetailPage(w, request.Method, boardService, request.Context(), path)
+			serveIssueDetailPage(w, request, boardService, path)
 		case path == "/api/issues" || strings.HasPrefix(path, "/api/issues/"):
 			serveIssueDetailAPI(w, request.Method, boardService, request.Context(), request.Header.Get("If-None-Match"), path)
 		default:
@@ -116,13 +118,13 @@ func serveBoardPage(w http.ResponseWriter, method string, boardService BoardHTTP
 	writeBoardHTTPResponse(w, http.StatusOK, "text/html; charset=utf-8", []byte(body), true)
 }
 
-func serveIssueDetailPage(w http.ResponseWriter, method string, boardService BoardHTTPService, ctx context.Context, path string) {
+func serveIssueDetailPage(w http.ResponseWriter, request *http.Request, boardService BoardHTTPService, path string) {
 	identifier, statusCode, err := parseIssueDetailRoute(path)
 	if err != nil {
 		writeBoardHTTPResponse(w, statusCode, "text/plain; charset=utf-8", []byte(err.Error()), true)
 		return
 	}
-	result, err := boardService.GetIssueDetail(ctx, identifier)
+	result, err := boardService.GetIssueDetail(request.Context(), identifier)
 	if err != nil {
 		var domainErr *domain.Error
 		if errors.As(err, &domainErr) {
@@ -138,12 +140,12 @@ func serveIssueDetailPage(w http.ResponseWriter, method string, boardService Boa
 		writeBoardHTTPResponse(w, http.StatusInternalServerError, "text/plain; charset=utf-8", []byte(http.StatusText(http.StatusInternalServerError)), true)
 		return
 	}
-	body, err := renderIssueDetailHTML(result)
+	body, err := renderIssueDetailHTML(result, taskReturnQuery(request.URL.Query()))
 	if err != nil {
 		writeBoardHTTPResponse(w, http.StatusInternalServerError, "text/plain; charset=utf-8", []byte(http.StatusText(http.StatusInternalServerError)), true)
 		return
 	}
-	if method == http.MethodHead {
+	if request.Method == http.MethodHead {
 		writeBoardHTTPResponse(w, http.StatusOK, "text/html; charset=utf-8", nil, true)
 		return
 	}

@@ -305,10 +305,13 @@ func runCLI(ctx context.Context, cfg *config.Config, stdout, stderr io.Writer, a
 			}
 		}
 		b := bundle.Bundle()
-		if bundle == nil || b.BoardService == nil || b.IssueDetailService == nil {
+		if bundle == nil || b.BoardService == nil || b.IssueDetailService == nil || b.IssueService == nil {
 			return errors.New("board service is not configured")
 		}
-		return runBoardServe(ctx, cfg, stdoutWriter, boardServeService{boardService: b.BoardService, issueDetailService: b.IssueDetailService, searchService: b.SearchService})
+		return runBoardServe(ctx, cfg, stdoutWriter, boardServeService{
+			boardService: b.BoardService, issueDetailService: b.IssueDetailService,
+			searchService: b.SearchService, issueService: b.IssueService,
+		})
 	}
 	backupHandler := func(ctx context.Context, output string) (cliadapter.BackupReport, error) {
 		if project == nil {
@@ -649,6 +652,11 @@ type boardServeService struct {
 	boardService       *application.BoardService
 	issueDetailService *application.IssueDetailService
 	searchService      *application.SearchService
+	issueService       *application.IssueService
+}
+
+func (service boardServeService) ListIssues(ctx context.Context, input domain.ListIssuesInput) (domain.IssueList, error) {
+	return service.issueService.ListIssues(ctx, input)
 }
 
 func (service boardServeService) GetBoard(ctx context.Context) (domain.BoardResult, error) {

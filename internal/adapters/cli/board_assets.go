@@ -3,6 +3,7 @@ package cli
 import "embed"
 
 //go:embed board_assets/board.css
+//go:embed board_assets/task.css
 //go:embed board_assets/board_live.js
 //go:embed board_assets/board_search.js
 //go:embed board_assets/*.tmpl
@@ -10,6 +11,7 @@ var boardAssetsFS embed.FS
 
 var (
 	boardHTMLStyle         = mustReadBoardAsset("board_assets/board.css")
+	taskHTMLStyle          = boardHTMLStyle + mustReadBoardAsset("board_assets/task.css")
 	boardLiveRefreshScript = mustReadBoardAsset("board_assets/board_live.js")
 	boardSearchScript      = mustReadBoardAsset("board_assets/board_search.js")
 )

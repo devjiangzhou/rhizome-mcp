@@ -86,7 +86,7 @@ func TestIssueDetailHTMLRendersGateSection(t *testing.T) {
 			NextActions: []string{"obtain an approved review covering purpose \"security\""},
 		},
 	}
-	html, err := renderIssueDetailHTML(detail)
+	html, err := renderIssueDetailHTML(detail, "")
 	if err != nil {
 		t.Fatalf("renderIssueDetailHTML() error = %v", err)
 	}
@@ -109,7 +109,7 @@ func TestIssueDetailHTMLRendersGateSection(t *testing.T) {
 	}
 
 	detail.Gates = domain.WorkContextGateSummary{Point: domain.EnforcementPointClaimWork}
-	html, err = renderIssueDetailHTML(detail)
+	html, err = renderIssueDetailHTML(detail, "")
 	if err != nil {
 		t.Fatalf("renderIssueDetailHTML(no gates) error = %v", err)
 	}
@@ -118,7 +118,7 @@ func TestIssueDetailHTMLRendersGateSection(t *testing.T) {
 	}
 
 	detail.Gates = domain.WorkContextGateSummary{Point: domain.EnforcementPointClaimWork, RequirementCount: 2, SatisfiedCount: 2}
-	html, err = renderIssueDetailHTML(detail)
+	html, err = renderIssueDetailHTML(detail, "")
 	if err != nil {
 		t.Fatalf("renderIssueDetailHTML(satisfied) error = %v", err)
 	}

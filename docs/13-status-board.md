@@ -24,6 +24,7 @@ Each surface independently renders the same board result. None carry backwards c
 All routes are GET/HEAD only. Any other HTTP method returns 405 Method Not Allowed with `Allow: GET, HEAD` header.
 
 - **`GET /`** — HTML board page (interactive, same-origin fetch for updates via API routes)
+- **`GET /tasks`** — HTML task browser. Use `view=list` (default) or `view=board`, optionally with an effective `status` and a pagination `cursor`. Both views read the same non-archived issues in priority order, up to 100 per page. Board columns use the effective status, including lease-derived `in_progress`. Counts describe the current page. Task links open issue details and retain the selected view, filter, and page for the return link. Use Refresh to read the current task state.
 - **`GET /search`** — HTML search page (issue search and snippet results)
 - **`GET /issues/{id}`** — HTML issue-detail page (including attempts, activities, notes, and related issues)
 - **`GET /api/board`** — JSON board data (supports ETag / If-None-Match for conditional refresh)

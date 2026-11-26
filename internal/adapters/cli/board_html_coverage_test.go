@@ -201,7 +201,7 @@ func TestRenderIssueDetailHTMLCoverage(t *testing.T) {
 	sparseDetail := domain.IssueDetail{Issue: domain.Issue{ID: issueID, DisplayID: "ISSUE-301", Title: "Sparse detail", Status: domain.StatusOpen, Priority: domain.PriorityMedium, Type: domain.TypeBug, Version: 1, CreatedAt: fixedAt, UpdatedAt: fixedAt.Add(1 * time.Minute)}}
 
 	t.Run("rich detail", func(t *testing.T) {
-		html, err := renderIssueDetailHTML(richDetail)
+		html, err := renderIssueDetailHTML(richDetail, "")
 		if err != nil {
 			t.Fatalf("renderIssueDetailHTML: %v", err)
 		}
@@ -226,7 +226,7 @@ func TestRenderIssueDetailHTMLCoverage(t *testing.T) {
 	t.Run("self root issue is omitted", func(t *testing.T) {
 		selfRootDetail := sparseDetail
 		selfRootDetail.RootIssueProjection = &domain.IssueProjection{Issue: domain.Issue{ID: issueID, DisplayID: "ISSUE-301"}}
-		html, err := renderIssueDetailHTML(selfRootDetail)
+		html, err := renderIssueDetailHTML(selfRootDetail, "")
 		if err != nil {
 			t.Fatalf("renderIssueDetailHTML: %v", err)
 		}
@@ -239,7 +239,7 @@ func TestRenderIssueDetailHTMLCoverage(t *testing.T) {
 	})
 
 	t.Run("sparse detail", func(t *testing.T) {
-		html, err := renderIssueDetailHTML(sparseDetail)
+		html, err := renderIssueDetailHTML(sparseDetail, "")
 		if err != nil {
 			t.Fatalf("renderIssueDetailHTML: %v", err)
 		}

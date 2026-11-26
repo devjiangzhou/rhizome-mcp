@@ -249,7 +249,7 @@ func TestRenderServedBoardHTMLUsesDisplayIDLinks(t *testing.T) {
 		RootIssueProjection: &domain.IssueProjection{Issue: domain.Issue{ID: "01ARZ3NDEKTSV4RRFFQ69G5FAV2", DisplayID: "ISSUE-60"}},
 		Graph:               domain.GraphResult{Nodes: []domain.IssueProjection{{Issue: domain.Issue{ID: "01ARZ3NDEKTSV4RRFFQ69G5FAV2", DisplayID: "ISSUE-60"}}}},
 	}
-	detailHTML, err := renderIssueDetailHTML(detail)
+	detailHTML, err := renderIssueDetailHTML(detail, "")
 	if err != nil {
 		t.Fatalf("renderIssueDetailHTML: %v", err)
 	}

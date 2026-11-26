@@ -125,6 +125,7 @@ type issueDetailPageViewModel struct {
 	BoardEndpoint       string
 	BoardRoute          string
 	ReturnHref          string
+	ReturnLabel         string
 	IssueHeading        string
 	StatusLine          string
 	Metadata            []issueDetailMetadataViewModel
@@ -394,6 +395,7 @@ func newIssueDetailPageViewModel(detail domain.IssueDetail) issueDetailPageViewM
 		BoardEndpoint:      "/api/issues/" + identifier,
 		BoardRoute:         "/issues/" + identifier,
 		ReturnHref:         "/",
+		ReturnLabel:        "Return to board",
 		IssueHeading:       detail.Issue.DisplayID,
 		StatusLine:         buildIssueStatusLine(detail),
 		Metadata:           []issueDetailMetadataViewModel{},
